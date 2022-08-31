@@ -1,3 +1,4 @@
+const { application } = require("express");
 const inquirer = require("inquirer");
 const mysql = require('mysql2');
 
@@ -5,7 +6,7 @@ const PORT = process.env.PORT || 3001;
 
 
 
-const connection = mysql.createConnection({
+const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'Password1',
@@ -59,18 +60,80 @@ const mainQuestion = () => {
 
 const viewEmployee = () => {
 
+    db.query('SHOW TABLE employees', function (err, results) {
+        console.log(results)
+    });
+
+    mainQuestion()
+
     };
 
 
 const addEmployee = () => {
 
-    
+    return inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: 'What is the employee\'s first name?',
+                name: 'first'
+            },
+            {
+                type: 'input',
+                message: 'What is the employee\'s last name?',
+                name: 'last'
+            },
+            {
+                type: 'list',
+                message: 'What is the employee\'s role?',
+                choices: ['Sales Lead', 'Salesperson', 'Lead Engineer', 'Software Engineer', 'Account Manager', 'Accountant', 'Legal Team Lead', 'Lawyer', 'Sales Lead', 'Salesperson', 'Lead Enginner'],
+                name: 'title'
+            },
+            // need to add the list of available managers to this list. 
+            {
+                type: 'list',
+                message: 'Who is the employee\'s manager?',
+                choices: ['None'],
+                name: 'manager'
+            }
+        ])
 
+        .then((results) => {
+            
+
+
+            mainQuestion()
+        });
+
+       
 
 };
 
 
 const updateEmployee = () => {
+
+    return inquirer
+        .prompt([
+            // need to add the current employees to update/ and the updated roles
+            {
+                type: 'list',
+                message: 'Which employee\'s role do you want to update?',
+                choices: ['None'],
+                name: 'title'
+            },
+            {
+                type: 'list',
+                message: 'Which role do you want to assign the selected employee?',
+                choices: ['Sales Lead', 'Software Engineer', 'Lawyer', 'Accountant']
+            }
+
+        ])
+
+        .then((results) => {
+
+
+            mainQuestion()
+        })
 
 
 };
@@ -78,12 +141,42 @@ const updateEmployee = () => {
 
 const viewRole = () => {
 
+    db.query('SHOW TABLE roles', function (err, results) {
+        console.log(results)
+    });
 
+    mainQuestion()
 };
 
 
 const addRole = () => {
 
+    return inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: 'What is the name of the role?',
+                name: 'name'
+            },
+            {
+                type: 'input',
+                message: 'What is the salary of the role?',
+                name: 'salary'
+            },
+            // need to add the role to the roles list. Need to make the list a variable to be able use the user input and append it to the list.
+            {
+                type: 'list',
+                message: 'Which department does the role belong to?',
+                choices: ['Engineering', 'Finance', 'Legal', 'Sales', 'Service'],
+                name: 'title'
+            }
+        ])
+
+        .then((results) => {
+
+
+            mainQuestion()
+        })
 
 };
 
@@ -99,11 +192,27 @@ const viewDepartment = () => {
 
 const addDepartment = () => {
 
+    return inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: 'What is the name of the department?',
+                name: 'name'
+            },
+        ])
+
+        .then((results) => {
+
+
+            mainQuestion()
+        })
 
 };
 
+app.use((req, res) => {
+    res.status(404).end();
+  });
 
-
-AudioParamMap.list(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
