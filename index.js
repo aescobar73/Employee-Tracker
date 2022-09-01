@@ -1,8 +1,11 @@
-const { application } = require("express");
+// const { application } = require("express");
 const inquirer = require("inquirer");
+const consoleTable = require("console.table");
 const mysql = require('mysql2');
 
-const PORT = process.env.PORT || 3001;
+
+
+
 
 
 
@@ -52,6 +55,7 @@ const mainQuestion = () => {
                     break;
                 default:
                     text = 'Good-bye!';
+                    break
             }
 
         })
@@ -60,8 +64,8 @@ const mainQuestion = () => {
 
 const viewEmployee = () => {
 
-    db.query('SHOW TABLE employees', function (err, results) {
-        console.log(results)
+    db.query('SELECT * FROM employees', function (err, results) {
+        console.table(results)
     });
 
     mainQuestion()
@@ -84,22 +88,22 @@ const addEmployee = () => {
                 name: 'last'
             },
             {
-                type: 'list',
-                message: 'What is the employee\'s role?',
-                choices: ['Sales Lead', 'Salesperson', 'Lead Engineer', 'Software Engineer', 'Account Manager', 'Accountant', 'Legal Team Lead', 'Lawyer', 'Sales Lead', 'Salesperson', 'Lead Enginner'],
+                type: 'input',
+                message: 'What is the employee\'s role ID?',
                 name: 'title'
             },
-            // need to add the list of available managers to this list. 
             {
-                type: 'list',
-                message: 'Who is the employee\'s manager?',
-                choices: ['None'],
+                type: 'input',
+                message: 'What is the employee\'s manager ID?',
                 name: 'manager'
             }
         ])
 
-        .then((results) => {
+        .then((response) => {
             
+            db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ('${response.first}', '${response.last}', '${response.title}', '${response.manager}')`), (err, result) => {
+                console.log('New Employee added')
+            }
 
 
             mainQuestion()
@@ -141,8 +145,8 @@ const updateEmployee = () => {
 
 const viewRole = () => {
 
-    db.query('SHOW TABLE roles', function (err, results) {
-        console.log(results)
+    db.query('SELECT * FROM roles', function (err, results) {
+        console.table(results)
     });
 
     mainQuestion()
@@ -163,16 +167,19 @@ const addRole = () => {
                 message: 'What is the salary of the role?',
                 name: 'salary'
             },
-            // need to add the role to the roles list. Need to make the list a variable to be able use the user input and append it to the list.
+        
             {
-                type: 'list',
-                message: 'Which department does the role belong to?',
-                choices: ['Engineering', 'Finance', 'Legal', 'Sales', 'Service'],
+                type: 'input',
+                message: 'What is the department ID?',
                 name: 'title'
             }
         ])
 
-        .then((results) => {
+        .then((response) => {
+
+            db.query(`INSERT INTO roles (title, salary, department_id) VALUES ('${response.name}', '${response.salary}', '${response.title}')`), (err, result) => {
+                console.log('New Role added')
+            }
 
 
             mainQuestion()
@@ -182,8 +189,8 @@ const addRole = () => {
 
 const viewDepartment = () => {
 
-        db.query('SHOW TABLE departments', function (err, results) {
-            console.log(results)
+        db.query('SELECT * FROM departments', function (err, results) {
+            console.table(results)
         });
 
         mainQuestion()
@@ -201,18 +208,25 @@ const addDepartment = () => {
             },
         ])
 
-        .then((results) => {
+        .then((response) => {
 
+
+
+            db.query(`INSERT INTO departments (name) VALUES ('${response.name}')`), (err, result) => {
+                console.log('New Department added')
+            }
+        
 
             mainQuestion()
         })
 
 };
 
-app.use((req, res) => {
-    res.status(404).end();
-  });
+// app.use((req, res) => {
+//     res.status(404).end();
+//   });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//     console.log(`Server running on port ${PORT}`);
+// });
+mainQuestion()
