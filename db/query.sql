@@ -8,3 +8,8 @@ JOIN employees ON roles.id = employees.role_id
 
 SELECT *
 FROM employees
+JOIN roles ON employees.role_id = roles.id;
+
+SELECT name, first_name, last_name
+FROM departments
+JOIN employees ON departments.id = employees.role_id;

@@ -1,12 +1,7 @@
 // const { application } = require("express");
+const cTable = require("console.table");
 const inquirer = require("inquirer");
-const consoleTable = require("console.table");
 const mysql = require('mysql2');
-
-
-
-
-
 
 
 const db = mysql.createConnection({
@@ -25,7 +20,7 @@ const mainQuestion = () => {
                 type: 'list',
                 message: ('What would you like to do?'),
                 choices: [ 'View All Employees', 'Add Employee', 'Update Employee Role', 'View All Roles', 'Add Role', 
-                            'View All Departments', 'Add Department'],
+                            'View All Departments', 'Add Department', 'Update Employee Manager', 'View By Department'],
                 name: 'options',
             }
         ])
@@ -53,6 +48,12 @@ const mainQuestion = () => {
                 case 'Add Department':
                     addDepartment();
                     break;
+                case 'Update Employee Manager':
+                    updateEmployeeManager();
+                    break;
+                case 'View By Department':
+                    viewByDepart();
+                    break;
                 default:
                     text = 'Good-bye!';
                     break
@@ -64,11 +65,14 @@ const mainQuestion = () => {
 
 const viewEmployee = () => {
 
-    db.query('SELECT * FROM employees', function (err, results) {
-        console.table(results)
-    });
+    db.query('SELECT * FROM employees JOIN roles ON employees.role_id = roles.id', function(err, results) {
+
+    console.table(results)
 
     mainQuestion()
+    });
+
+    
 
     };
 
@@ -103,10 +107,12 @@ const addEmployee = () => {
             
             db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ('${response.first}', '${response.last}', '${response.title}', '${response.manager}')`), (err, result) => {
                 console.log('New Employee added')
+
+                mainQuestion()
             }
 
 
-            mainQuestion()
+            
         });
 
        
@@ -118,25 +124,31 @@ const updateEmployee = () => {
 
     return inquirer
         .prompt([
-            // need to add the current employees to update/ and the updated roles
+           
             {
-                type: 'list',
-                message: 'Which employee\'s role do you want to update?',
-                choices: ['None'],
+                type: 'input',
+                message: 'What is the employee\'s ID?',
                 name: 'title'
             },
             {
-                type: 'list',
-                message: 'Which role do you want to assign the selected employee?',
-                choices: ['Sales Lead', 'Software Engineer', 'Lawyer', 'Accountant']
+                type: 'input',
+                message: 'Enter employee\'s new role ID?',
+                name: 'newRole'
             }
 
         ])
 
         .then((results) => {
 
+            const update = `UPDATE employees SET role_id=? WHERE id=?`
 
-            mainQuestion()
+            db.query(update, [results.newRole, results.title]), (err, results) => {
+                console.log('New Employee added')
+
+                mainQuestion()
+            }
+
+            
         })
 
 
@@ -147,9 +159,11 @@ const viewRole = () => {
 
     db.query('SELECT * FROM roles', function (err, results) {
         console.table(results)
+
+        mainQuestion()
     });
 
-    mainQuestion()
+    
 };
 
 
@@ -179,10 +193,12 @@ const addRole = () => {
 
             db.query(`INSERT INTO roles (title, salary, department_id) VALUES ('${response.name}', '${response.salary}', '${response.title}')`), (err, result) => {
                 console.log('New Role added')
+
+                mainQuestion()
             }
 
 
-            mainQuestion()
+            
         })
 
 };
@@ -191,9 +207,11 @@ const viewDepartment = () => {
 
         db.query('SELECT * FROM departments', function (err, results) {
             console.table(results)
+
+            mainQuestion()
         });
 
-        mainQuestion()
+        
 
 };
 
@@ -214,19 +232,66 @@ const addDepartment = () => {
 
             db.query(`INSERT INTO departments (name) VALUES ('${response.name}')`), (err, result) => {
                 console.log('New Department added')
+
+                mainQuestion()
             }
         
 
-            mainQuestion()
+            
         })
 
 };
 
-// app.use((req, res) => {
-//     res.status(404).end();
-//   });
+// Bonus
 
-// app.listen(PORT, () => {
-//     console.log(`Server running on port ${PORT}`);
-// });
+const updateEmployeeManager = () => {
+
+    return inquirer
+        .prompt([
+            // need to add the current employees to update/ and the updated roles
+            {
+                type: 'input',
+                message: 'What is the employee\'s ID?',
+                name: 'title'
+            },
+            {
+                type: 'input',
+                message: 'Enter employee\'s new manager ID?',
+                name: 'newRole'
+            }
+
+        ])
+
+        .then((results) => {
+
+            const update2 = `UPDATE employees SET manager_id=? WHERE id=?`
+
+            db.query(update2, [results.newRole, results.title]), (err, results) => {
+                console.log('New Manager Updated!')
+
+                mainQuestion()
+            }
+
+            
+        })
+
+};
+
+
+const viewByDepart = () => {
+
+    db.query('SELECT name, first_name, last_name FROM departments JOIN employees ON departments.id = employees.roles_id', function (err, results) {
+
+        console.table(results)
+
+        mainQuestion()
+        
+        });
+    
+        
+    
+};
+  
+
+
 mainQuestion()
