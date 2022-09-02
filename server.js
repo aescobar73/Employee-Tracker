@@ -108,10 +108,10 @@ const addEmployee = () => {
             db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ('${response.first}', '${response.last}', '${response.title}', '${response.manager}')`), (err, result) => {
                 console.log('New Employee added')
 
-                mainQuestion()
+                
             }
 
-
+            mainQuestion()
             
         });
 
@@ -145,10 +145,11 @@ const updateEmployee = () => {
             db.query(update, [results.newRole, results.title]), (err, results) => {
                 console.log('New Employee added')
 
-                mainQuestion()
+                
             }
 
-            
+            mainQuestion()
+
         })
 
 
@@ -194,10 +195,10 @@ const addRole = () => {
             db.query(`INSERT INTO roles (title, salary, department_id) VALUES ('${response.name}', '${response.salary}', '${response.title}')`), (err, result) => {
                 console.log('New Role added')
 
-                mainQuestion()
+                
             }
 
-
+            mainQuestion()
             
         })
 
@@ -233,10 +234,10 @@ const addDepartment = () => {
             db.query(`INSERT INTO departments (name) VALUES ('${response.name}')`), (err, result) => {
                 console.log('New Department added')
 
-                mainQuestion()
+                
             }
         
-
+            mainQuestion()
             
         })
 
@@ -269,9 +270,10 @@ const updateEmployeeManager = () => {
             db.query(update2, [results.newRole, results.title]), (err, results) => {
                 console.log('New Manager Updated!')
 
-                mainQuestion()
+                
             }
 
+            mainQuestion()
             
         })
 
